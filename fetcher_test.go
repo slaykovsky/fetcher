@@ -44,12 +44,12 @@ const (
 )
 
 func TestMakeURL(t *testing.T) {
-	fetcher := HTTPFetcher{
+	fetcher := &HTTPFetcher{
 		Location:   Location,
 		ScratchDir: ScratchDir,
 	}
 
-	url, err := fetcher.MakeURL(FileName)
+	url, err := MakeURL(FileName, fetcher)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -60,12 +60,12 @@ func TestMakeURL(t *testing.T) {
 }
 
 func TestWriteFile(t *testing.T) {
-	fetcher := HTTPFetcher{
+	fetcher := &HTTPFetcher{
 		Location:   Location,
 		ScratchDir: ScratchDir,
 	}
 
-	url, err := fetcher.MakeURL(FileName)
+	url, err := MakeURL(FileName, fetcher)
 	if err != nil {
 		t.Fatal(err)
 	}
