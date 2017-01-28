@@ -48,7 +48,7 @@ type HTTPFetcher struct {
 	ScratchDir string
 }
 
-func (f *HTTPFetcher) MakeURL(fileName string) (string, error) {
+func MakeURL(fileName string, f *HTTPFetcher) (string, error) {
 	if len(fileName) == 0 {
 		return "", fmt.Errorf("Empty file name!")
 	}
@@ -80,21 +80,25 @@ func (f *HTTPFetcher) WriteFile(url string, file *os.File) (int64, error) {
 
 }
 
-func (f *HTTPFetcher) AcquireFile(filePath string) (bool, error) {
+func (f *HTTPFetcher) AcquireFile(fileName string) (string, error) {
 	newName := strings.Join(
-		[]string{FilePrefix, path.Base(filePath), "."}, "")
+		[]string{FilePrefix, path.Base(fileName), "."}, "")
 
 	tempFile, err := ioutil.TempFile(f.ScratchDir, newName)
-
 	if err != nil {
-		return false, err
+		return "", err
 	}
 	defer tempFile.Close()
 
-	_, err = f.WriteFile(filePath, tempFile)
+	url, err := MakeURL(fileName, f)
 	if err != nil {
-		return false, err
+		return "", err
 	}
 
-	return true, nil
+	_, err = f.WriteFile(url, tempFile)
+	if err != nil {
+		return "", err
+	}
+
+	return tempFile.Name(), nil
 }
